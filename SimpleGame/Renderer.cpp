@@ -48,12 +48,21 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
 
+	float centerX = 0;
+	float centerY = 0;
+	float size = 0.1f;
+
 	float triangle[]
 		=
 	{
-		0, 0, 0,
-		1, 0, 0,
-		1, 1, 0
+		centerX - size / 2 , centerY - size / 2 ,	0,
+		centerX + size / 2 , centerY - size / 2 ,	0,
+		centerX + size / 2 , centerY + size / 2 ,	0,	//tri1
+
+		centerX - size / 2 , centerY - size / 2 ,	0,
+		centerX + size / 2 , centerY + size / 2 ,	0,
+		centerX - size / 2 , centerY + size / 2 ,	0		//tri2
+
 	};
 
 	glGenBuffers(1, &m_VBOTriangle);
@@ -202,14 +211,24 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 	*newY = y * 2.f / m_WindowSizeY;
 }
 
+float g_Time = 0;
 void Renderer::DrawTriangle()
 {
+	g_Time += 0.01f;
+
 	glUseProgram(m_TriangleShader);
+
+	//uniform 다렉의 constant buffer과 비슷한 개념
+	//location(ID 또는 레지스터 넘버같은 개념) 값을 가져옴
+	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
+
+	//드로우 콜 전에 uniform 변수에 값을 할당
+	glUniform1f(uTime, g_Time);
 
 	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
