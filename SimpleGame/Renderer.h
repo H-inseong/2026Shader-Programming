@@ -16,6 +16,7 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
+	void DrawParticle();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -36,5 +37,8 @@ private:
 
 	GLuint m_VBOTriangle = 0;
 	GLuint m_TriangleShader = 0;
+
+	GLuint m_VBOParticle = 0;
+	size_t m_ParticleCount = 0;
 };
 
