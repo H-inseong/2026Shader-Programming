@@ -74,10 +74,10 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	m_ParticleCount = 100000;
+	m_ParticleCount = 5000;
 
 	std::vector<float> pD;
-	pD.reserve(m_ParticleCount * 36);
+	pD.reserve(m_ParticleCount * 42);
 
 	for (size_t i = 0; i < m_ParticleCount; ++i)
 	{
@@ -85,23 +85,24 @@ void Renderer::CreateVertexBufferObjects()
 		float centerY = 0.0f;
 		float size = 0.05f;
 		float mass = 1.0f;
+		float rv = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 
-		float vx = ((rand() % 100) / 10.0f) - 5.0f; // -5.0 ~ 5.0
-		float vy = ((rand() % 100) / 10.0f);        // 0.0 ~ 10.0
+		float vx = ((rand() % 100) / 2.0f) - 1.f; // -5.0 ~ 5.0
+		float vy = ((rand() % 100) / 2.0f) - 1.f;        // 0.0 ~ 10.0
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 		pD.push_back(centerX - size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv);
 	}
 
 	glGenBuffers(1, &m_VBOParticle);
@@ -265,25 +266,23 @@ void Renderer::DrawTriangle()
 
 	int attribPosition =	glGetAttribLocation(m_TriangleShader, "a_Position");
 	int		attribMass =	glGetAttribLocation(m_TriangleShader, "a_Mass");
-	int arrtibVelocity =	glGetAttribLocation(m_TriangleShader, "a_Vel");
+	int attribVelocity =	glGetAttribLocation(m_TriangleShader, "a_Vel");
 	
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
-	glEnableVertexAttribArray(arrtibVelocity);
+	glEnableVertexAttribArray(attribVelocity);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE,	sizeof(float) * 6, 0); 
 	//	attribPosition 의 경우, stride는 6*float, offset은 0									
-	
 	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE,		sizeof(float) * 6, (GLvoid*)(sizeof(float)*3));
 	// 	attribMass 의 경우, 마지막 1개가 mass이므로, stride는 6*float, offset은 3*float
-
-	glVertexAttribPointer(arrtibVelocity, 2, GL_FLOAT, GL_FALSE,	sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(attribVelocity, 2, GL_FLOAT, GL_FALSE,	sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
 	// 	arrtibVelocity 의 경우, 마지막 2개가 Vel이므로, stride는 6*float, offset은 4*float
-
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
 void Renderer::DrawParticle()
 {
 	g_Time += 0.001f;
@@ -300,21 +299,28 @@ void Renderer::DrawParticle()
 	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
 	int		attribMass = glGetAttribLocation(m_TriangleShader, "a_Mass");
 	int arrtibVelocity = glGetAttribLocation(m_TriangleShader, "a_Vel");
+	int attribRandomValue = glGetAttribLocation(m_TriangleShader, "a_RandomValue");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
 	glEnableVertexAttribArray(arrtibVelocity);
+	glEnableVertexAttribArray(attribRandomValue);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
-	//	attribPosition 의 경우, stride는 6*float, offset은 0									
+	auto size = sizeof(float) * 7;
 
-	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, size, 0);
+	//	attribPosition 의 경우, stride는 6*float, offset은 0
+
+	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, size, (GLvoid*)(sizeof(float) * 3));
 	// 	attribMass 의 경우, 마지막 1개가 mass이므로, stride는 6*float, offset은 3*float
 
-	glVertexAttribPointer(arrtibVelocity, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(arrtibVelocity, 2, GL_FLOAT, GL_FALSE, size, (GLvoid*)(sizeof(float) * 4));
 	// 	arrtibVelocity 의 경우, 마지막 2개가 Vel이므로, stride는 6*float, offset은 4*float
+
+	glVertexAttribPointer(attribRandomValue, 1, GL_FLOAT, GL_FALSE, size, (GLvoid*)(sizeof(float) * 6));
+	// 	attribRandomValue 의 경우, 마지막 1개가 RandomValue이므로, stride는 7*float, offset은 6*float
 
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount);
 }

@@ -7,6 +7,7 @@ uniform float u_Time;
 in vec3 a_Position;
 in float a_Mass;
 in vec2 a_Vel;
+in float a_RandomValue;
 
 const float c_G = -9.8f;
 const float c_PI = 3.141592f;
@@ -30,17 +31,21 @@ void sin()
 
 void Falling()
 {
+	float t = mod(u_Time, 2.0);
+	float tt = t*t;
 	float vx, vy;
+	float sx, sy;
+
 	vx = a_Vel.x;
 	vy = a_Vel.y;
 
-	float t = mod(u_Time, 2.0);
-	float tt = t*t;
+	sx = a_Position.x + cos(a_RandomValue * 2 * c_PI);
+	sy = a_Position.y + sin(a_RandomValue * 2 * c_PI);
 
 	vec4 newPos;
 
-	newPos.x = a_Position.x + vx * t;
-	newPos.y = a_Position.y + vy * t + 0.5 * c_G * tt;
+	newPos.x = sx + vx * t;
+	newPos.y = sy + vy * t + 0.5 * c_G * tt;
 	newPos.z = 0;
 	newPos.w = 1;
 
