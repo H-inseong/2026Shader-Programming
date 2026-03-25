@@ -74,7 +74,7 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	m_ParticleCount = 500;
+	m_ParticleCount = 1000;
 
 	std::vector<float> pD;
 	pD.reserve(m_ParticleCount * 48);

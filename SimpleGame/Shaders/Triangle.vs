@@ -13,28 +13,40 @@ in float a_LifeTime;
 
 const float c_G = -9.8f;
 const float c_PI = 3.141592f;
-
-void sin()
-{
-	float t = u_Time;
-
-	//시간 배율
-	t *= 0.05;
-
-	vec4 newPos;
-
-	newPos.x = a_Position.x + cos(t);
-	newPos.y = a_Position.y + sin(t);
-	newPos.z = 0;
-	newPos.w = 1;
-
-	gl_Position = newPos;
-}
-
 float random(float x)
 {
     return fract(sin(x * 12.9898) * 43758.5453);
 }
+
+
+void sinpa()
+{
+    float startTime = a_RandomValue * 2;
+    float newTime = u_Time - startTime;
+	vec4 newPos;
+    
+    if (newTime > 0 )
+    {
+	    float t = mod(newTime, 5.0);
+
+        float scale = a_RandomValue * t + 0.1;
+        float amp = (1-t) * 0.2 * (a_RandomValue - 0.5) * 2;
+        float period = a_RandomValue2;
+        
+        newPos.x = a_Position.x * scale + t;
+	    newPos.y = a_Position.y * scale + sin(t * 2 * c_PI * period) * amp;
+	    newPos.z = 0;
+	    newPos.w = 1;
+
+	    gl_Position = newPos;
+    }
+    else
+    {
+        gl_Position = vec4(-100, -100, 0, 1);
+    }
+}
+
+
 
 void Falling()
 {
@@ -128,5 +140,5 @@ void ImpactCircle()
 
 void main()
 {
-	Falling();
+	sinpa();
 }
