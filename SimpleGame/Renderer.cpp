@@ -87,23 +87,32 @@ void Renderer::CreateVertexBufferObjects()
 		float mass = 1.0f;
 		float rv1 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 		float rv2 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
+		float rv3 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 
 		float vx = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
 		float vy = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
 
-		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(centerX + size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
-		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		float LT = 1.0f;
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(centerX + size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
+
+		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
+		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
 		pD.push_back(centerX - size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
+		pD.push_back(rv3); pD.push_back(LT);
 	}
 
 	glGenBuffers(1, &m_VBOParticle);
@@ -302,31 +311,30 @@ void Renderer::DrawParticle()
 	int arrtibVelocity = glGetAttribLocation(m_TriangleShader, "a_Vel");
 	int attribRandomValue = glGetAttribLocation(m_TriangleShader, "a_RandomValue");
 	int attribRandomValue2 = glGetAttribLocation(m_TriangleShader, "a_RandomValue2");
+	int attribRandomValue3 = glGetAttribLocation(m_TriangleShader, "a_RandomValue3");
+	int attribLifeTime = glGetAttribLocation(m_TriangleShader, "a_LifeTime");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
 	glEnableVertexAttribArray(arrtibVelocity);
 	glEnableVertexAttribArray(attribRandomValue);
 	glEnableVertexAttribArray(attribRandomValue2);
+	glEnableVertexAttribArray(attribRandomValue3);
+	glEnableVertexAttribArray(attribLifeTime);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 
-	auto stride = sizeof(float) * 8;
+	auto stride = sizeof(float) * 10;
 
+	// Position, Mass, Velocity, RandomValue1, RandomValue2, RandomValue3, LifeTime
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
-	//	attribPosition offset 0
-
 	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 3));
-	// 	attribMass offset 3*float
-
 	glVertexAttribPointer(arrtibVelocity, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 4));
-	// 	arrtibVelocity offset 4*float
-
 	glVertexAttribPointer(attribRandomValue, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 6));
-	// 	attribRandomValue  offset 6*float
-
 	glVertexAttribPointer(attribRandomValue2, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 7));
-	// 	attribRandomValue2  offset 7*float
+	glVertexAttribPointer(attribRandomValue3, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 8));
+	glVertexAttribPointer(attribLifeTime, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 9));
+
 
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
 }

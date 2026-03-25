@@ -5,8 +5,11 @@ uniform float u_Time;
 in vec3 a_Position;
 in float a_Mass;
 in vec2 a_Vel;
+
 in float a_RandomValue;
 in float a_RandomValue2;
+in float a_RandomValue3;
+in float a_LifeTime;
 
 const float c_G = -9.8f;
 const float c_PI = 3.141592f;
@@ -40,8 +43,10 @@ void Falling()
 	float newTime = u_Time - startTime;
 	
 	if ( newTime > 0 ) {
-		
-		float t = mod(newTime, 2.0);
+
+        float lifescale = 1.0;
+        float lifetime = a_LifeTime * a_RandomValue3 * lifescale;
+		float t = lifetime * fract(newTime / lifetime);
 		float tt = t*t;
 		float vx, vy;
 		float sx, sy;
@@ -123,5 +128,5 @@ void ImpactCircle()
 
 void main()
 {
-	ImpactCircle();
+	Falling();
 }
