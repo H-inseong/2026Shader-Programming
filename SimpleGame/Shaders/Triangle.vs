@@ -11,6 +11,8 @@ in float a_RandomValue2;
 in float a_RandomValue3;
 in float a_LifeTime;
 
+out float v_Grey;
+
 const float c_G = -9.8f;
 const float c_PI = 3.141592f;
 float random(float x)
@@ -21,17 +23,17 @@ float random(float x)
 
 void sinpa()
 {
-    float startTime = a_RandomValue * 2;
+    float startTime = random(a_RandomValue) * 2;
     float newTime = u_Time - startTime;
 	vec4 newPos;
     
     if (newTime > 0 )
     {
-	    float t = mod(newTime, 5.0);
+	    float t = mod(newTime, 1.0);
 
-        float scale = a_RandomValue * t + 0.1;
         float amp = (1-t) * 0.2 * (a_RandomValue - 0.5) * 2;
         float period = a_RandomValue2;
+        float scale = a_RandomValue3 * 0.5;
         
         newPos.x = a_Position.x * scale + t;
 	    newPos.y = a_Position.y * scale + sin(t * 2 * c_PI * period) * amp;
@@ -39,10 +41,12 @@ void sinpa()
 	    newPos.w = 1;
 
 	    gl_Position = newPos;
+        v_Grey = 1.0 - t; // 시간이 지남에 따라 회색이 점점 밝아짐
     }
     else
     {
         gl_Position = vec4(-100, -100, 0, 1);
+        v_Grey = 0.0;
     }
 }
 
@@ -140,5 +144,5 @@ void ImpactCircle()
 
 void main()
 {
-	sinpa();
+    sinpa();
 }

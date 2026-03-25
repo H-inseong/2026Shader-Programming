@@ -92,7 +92,7 @@ void Renderer::CreateVertexBufferObjects()
 		float vx = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
 		float vy = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
 
-		float LT = 1.0f;
+		float LT = 10.0f;
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
