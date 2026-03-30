@@ -124,8 +124,8 @@ void Renderer::CreateVertexBufferObjects()
 	float FSRect[]
 		=
 	{
-		-1.f, -1.f, 0.f,	-1.f, 1.f, 0.f,		1.f, 1.f, 0.f,
-		-1.f, -1.f, 0.f,	1.f, 1.f, 0.f,		1.f, -1.f, 0.f,
+		-1.f, -1.f, 0.f, 0, 1,	1.0f, 1.f, 0.f, 1, 0,		-1.f, 1.f, 0.f, 0, 0,
+		-1.f, -1.f, 0.f, 0, 1,	1.f, -1.f, 0.f, 1, 1,		1.f, 1.f, 0.f, 1, 0
 	};
 	glGenBuffers(1, &m_VBOFS);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
@@ -370,14 +370,17 @@ void Renderer::DrawFSShader()
 	glUniform1f(uTime, g_Time);
 
 	int attribPosition = glGetAttribLocation(m_FSShader, "a_Position");
-
+	int attribTexCoord = glGetAttribLocation(m_FSShader, "a_TexCoord");
 
 	glEnableVertexAttribArray(attribPosition);
-
+	glEnableVertexAttribArray(attribTexCoord);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
 
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	auto stride = sizeof(float) * 5;
+
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
+	glVertexAttribPointer(attribTexCoord, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 3));
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
