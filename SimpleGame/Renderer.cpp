@@ -124,8 +124,13 @@ void Renderer::CreateVertexBufferObjects()
 	float FSRect[]
 		=
 	{
-		-1.f, -1.f, 0.f, 0, 1,	1.0f, 1.f, 0.f, 1, 0,		-1.f, 1.f, 0.f, 0, 0,
-		-1.f, -1.f, 0.f, 0, 1,	1.f, -1.f, 0.f, 1, 1,		1.f, 1.f, 0.f, 1, 0
+		-1.f, -1.f, 0.f, 0, 1,
+		 1.f,  1.f, 0.f, 1, 0,
+		-1.f,  1.f, 0.f, 0, 0,
+		
+		-1.f, -1.f, 0.f, 0, 1,
+		 1.f, -1.f, 0.f, 1, 1,
+		 1.f,  1.f, 0.f, 1, 0
 	};
 	glGenBuffers(1, &m_VBOFS);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
@@ -362,11 +367,7 @@ void Renderer::DrawFSShader()
 	auto shader = m_FSShader;
 	glUseProgram(m_FSShader);
 
-	//uniform 다렉의 constant buffer과 비슷한 개념
-	//location(ID 또는 레지스터 넘버같은 개념) 값을 가져옴
 	int uTime = glGetUniformLocation(m_FSShader, "u_Time");
-
-	//드로우 콜 전에 uniform 변수에 값을 할당
 	glUniform1f(uTime, g_Time);
 
 	int attribPosition = glGetAttribLocation(m_FSShader, "a_Position");
