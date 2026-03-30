@@ -17,6 +17,7 @@ public:
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
 	void DrawParticle();
+	void DrawFSShader();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -40,5 +41,9 @@ private:
 
 	GLuint m_VBOParticle = 0;
 	size_t m_ParticleCount = 0;
+
+	//Fragment shader
+	GLuint m_VBOFS = 0;
+	GLuint m_FSShader = 0;
 };
 

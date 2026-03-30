@@ -41,7 +41,7 @@ void sinpa()
 	    newPos.w = 1;
 
 	    gl_Position = newPos;
-        v_Grey = 1.0 - t; // 시간이 지남에 따라 회색이 점점 밝아짐
+        v_Grey = .8 - t*0.5; // 시간이 지남에 따라 회색이 점점 밝아짐
     }
     else
     {

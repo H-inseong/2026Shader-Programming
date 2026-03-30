@@ -20,6 +20,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
+	m_FSShader = CompileShaders("./Shaders/FSShader.vs", "./Shaders/FSShader.fs");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -118,6 +119,18 @@ void Renderer::CreateVertexBufferObjects()
 	glGenBuffers(1, &m_VBOParticle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 	glBufferData(GL_ARRAY_BUFFER, pD.size() * sizeof(float), pD.data(), GL_STATIC_DRAW);
+
+
+	float FSRect[]
+		=
+	{
+		-1.f, -1.f, 0.f,	-1.f, 1.f, 0.f,		1.f, 1.f, 0.f,
+		-1.f, -1.f, 0.f,	1.f, 1.f, 0.f,		1.f, -1.f, 0.f,
+	};
+	glGenBuffers(1, &m_VBOFS);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(FSRect), FSRect, GL_STATIC_DRAW);
+
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -254,6 +267,8 @@ void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, flo
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+
+
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 {
 	*newX = x * 2.f / m_WindowSizeX;
@@ -337,4 +352,32 @@ void Renderer::DrawParticle()
 
 
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
+}
+
+
+void Renderer::DrawFSShader()
+{
+	g_Time += 0.0005f;
+
+	auto shader = m_FSShader;
+	glUseProgram(m_FSShader);
+
+	//uniform 다렉의 constant buffer과 비슷한 개념
+	//location(ID 또는 레지스터 넘버같은 개념) 값을 가져옴
+	int uTime = glGetUniformLocation(m_FSShader, "u_Time");
+
+	//드로우 콜 전에 uniform 변수에 값을 할당
+	glUniform1f(uTime, g_Time);
+
+	int attribPosition = glGetAttribLocation(m_FSShader, "a_Position");
+
+
+	glEnableVertexAttribArray(attribPosition);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
