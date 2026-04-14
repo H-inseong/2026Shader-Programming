@@ -4,13 +4,13 @@ layout(location=0) out vec4 FragColor;
 uniform float u_Time;
 uniform vec4 u_DropInfo[1000]; // x, y, startTime, lifeTime
 
-in vec2 v_TPos;
+in vec2 v_Tex;
 
 const float c_PI = 3.141592f;
 
 void simple()
 {
-	FragColor = vec4(v_TPos, sin(u_Time), 1);
+	FragColor = vec4(v_Tex, sin(u_Time), 1);
 }
 
 
@@ -26,8 +26,8 @@ void Linepattern()
 
 	float per = -0.5 * c_PI * u_Time;
 
-	float greyscale = pow(abs(sin(v_TPos.y * c_PI * Vlinecount + per)), linewidth);
-	greyscale += pow(abs(sin(v_TPos.x * c_PI * Hlinecount + per)), linewidth);
+	float greyscale = pow(abs(sin(v_Tex.y * c_PI * Vlinecount + per)), linewidth);
+	greyscale += pow(abs(sin(v_Tex.x * c_PI * Hlinecount + per)), linewidth);
 
 	FragColor = vec4(greyscale);
 }
@@ -38,7 +38,7 @@ void Circlepattern()
 	float Radius = 0.5;
 	float linewidth = 0.01;
 	vec2 Center = vec2(0.5);
-	vec2 CurPos = v_TPos.xy;
+	vec2 CurPos = v_Tex.xy;
 	float dist = distance(Center, CurPos);
 
 	if (dist > Radius - linewidth && dist < Radius  )
@@ -55,7 +55,7 @@ void Circlepattern()
 void CircleSin()
 {
 	vec2 Center = vec2(0.5);
-	vec2 currPos = v_TPos.xy;
+	vec2 currPos = v_Tex.xy;
 	float dist = distance(Center, currPos);
 	float Circlecount = 10;
 
@@ -84,7 +84,7 @@ void RainDrop()
 			float t = newTime * lTime;
 
 			vec2 Center = u_DropInfo[i].xy;
-			vec2 currPos = v_TPos.xy;
+			vec2 currPos = v_Tex.xy;
 
 			float range = t / 8;
 			float dist = distance(Center, currPos);
@@ -105,8 +105,30 @@ void RainDrop()
 	FragColor = vec4(temp);
 }
 
+void flag()
+{
+	float speed = 10;
+	float amp = 0.1;
+	float sin_input = v_Tex.x * c_PI * 2 - u_Time * speed;
+	float sin_value = v_Tex.x * amp * (((sin(sin_input) + 1) / 2) - 0.5 )  + 0.5;
+	float fWidth = 0.0;
+	float width = 0.5 * mix(1, fWidth, v_Tex.x);
+	float grey = 0;
+
+	if (v_Tex.y < sin_value + width / 2  && v_Tex.y > sin_value - width / 2)
+	{
+		grey = 1;
+	}	
+	else
+	{
+		grey = 0;
+		discard;
+	}
+	FragColor = vec4(grey);
+}
+
 
 void main()
 {
-	RainDrop();
+	flag();
 }
