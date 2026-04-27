@@ -151,8 +151,48 @@ void TextureSampling()
 	FragColor =  sum;
 }
 
+void  MiddleLine_mirrorTexture()
+{
+	float tx = v_Tex.x;
+	float ty = 1 - abs(v_Tex.y - 0.5) * 2;
 
+	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+}
+
+void  Right_mirrorTexture()
+{
+	float tx = v_Tex.x;
+	float ty = v_Tex.y;
+
+	tx = fract(v_Tex.x * 3);
+	ty /= 3;
+	
+	float offsetX = 0;
+	float offsetY = (2 - floor(v_Tex.x * 3)) / 3;
+
+	tx += offsetX;
+	ty += offsetY;
+
+	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+}
+
+void  Right_NonemirrorTexture()
+{
+	float tx = v_Tex.x;
+	float ty = v_Tex.y;
+
+	tx = fract(v_Tex.x * 3);
+	ty /= 3;
+	
+	float offsetX = 0;
+	float offsetY = floor(v_Tex.x * 3) / 3;
+
+	tx += offsetX;
+	ty += offsetY;
+
+	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+}
 void main()
 {
-	TextureSampling();
+	Right_NonemirrorTexture();
 }
