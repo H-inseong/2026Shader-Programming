@@ -14,6 +14,7 @@ public:
 	~Renderer();
 
 	bool IsInitialized();
+	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
 	void DrawParticle();
@@ -48,5 +49,10 @@ private:
 
 	//RainDrops
 	float m_DropPoints[1000 * 4]; //x, y, startTime, endTime
+
+	//Texture
+	GLuint m_RgbTexture = 0;
+	GLuint m_NumsTexture = 0;
+	GLuint m_NumTexture[10] = { 0 };
 };
 

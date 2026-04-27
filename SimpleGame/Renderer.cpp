@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "LoadPng.h"
+
 #include <vector>
+#include <assert.h>
+
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
 	Initialize(windowSizeX, windowSizeY);
@@ -21,6 +25,17 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
 	m_FSShader = CompileShaders("./Shaders/FSShader.vs", "./Shaders/FSShader.fs");
+
+	//Load textures
+	m_RgbTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);
+	m_NumsTexture = CreatePngTexture("./Textures/Numbers.png", GL_NEAREST);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		char filePath[256];
+		sprintf_s(filePath, "./Textures/%d.png", i);
+		m_NumTexture[i] = CreatePngTexture(filePath, GL_NEAREST);
+	}
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -44,6 +59,32 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 bool Renderer::IsInitialized()
 {
 	return m_Initialized;
+}
+
+GLuint Renderer::CreatePngTexture(char* filePath, GLuint samplingMethod)
+{
+	//Load Png
+	std::vector<unsigned char> image;
+
+	unsigned width, height;
+	unsigned error = lodepng::decode(image, width, height, filePath);
+
+	if (error != 0)
+	{
+		std::cout << "PNG image loading failed:" << filePath << std::endl;
+		assert(0);
+	}
+
+	GLuint temp;
+	glGenTextures(1, &temp);
+	glBindTexture(GL_TEXTURE_2D, temp);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, &image[0]);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, samplingMethod);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, samplingMethod);
+
+	return temp;
 }
 
 void Renderer::CreateVertexBufferObjects()
@@ -381,6 +422,11 @@ void Renderer::DrawFSShader()
 	glUniform1f(uTime, g_Time);
 	int uDropPoints = glGetUniformLocation(m_FSShader, "u_DropInfo");
 	glUniform4fv(uDropPoints, 1000, m_DropPoints);
+	
+	int uRgbTexture = glGetUniformLocation(m_FSShader, "u_RgbTexture");
+	glUniform1i(uRgbTexture, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_RgbTexture);
 
 	int attribPosition = glGetAttribLocation(m_FSShader, "a_Position");
 	int attribTexCoord = glGetAttribLocation(m_FSShader, "a_TexCoord");
