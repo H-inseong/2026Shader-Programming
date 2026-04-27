@@ -53,6 +53,6 @@ private:
 	//Texture
 	GLuint m_RgbTexture = 0;
 	GLuint m_NumsTexture = 0;
-	GLuint m_NumTexture[10] = { 0 };
+	GLuint m_NumTexture[10];
 };
 
