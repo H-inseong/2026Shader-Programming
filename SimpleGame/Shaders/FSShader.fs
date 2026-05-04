@@ -3,6 +3,9 @@
 layout(location=0) out vec4 FragColor;
 uniform float u_Time;
 uniform sampler2D u_RgbTexture;
+uniform sampler2D u_CurrNumTexture;
+uniform sampler2D u_NumsTexture;
+uniform int u_InputNum;
 
 uniform vec4 u_DropInfo[1000]; // x, y, startTime, lifeTime
 
@@ -208,7 +211,22 @@ void Brick()
 	FragColor = texture(u_RgbTexture, vec2(tx, ty));
 }
 
+void Num()
+{
+	float index = float(u_InputNum);
+
+	float tx = v_Tex.x / 5;
+	float ty = v_Tex.y / 2;
+	
+	float offsetX = fract(index / 5);
+	float offsetY = floor(index/5) / 2;
+
+	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_NumsTexture, newTex);
+
+}
+
 void main()
 {
-	Brick();
+	Num();
 }
