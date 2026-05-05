@@ -428,7 +428,7 @@ void Renderer::DrawFSShader()
 
 	int uCurrbTexture = glGetUniformLocation(m_FSShader, "u_CurrNumTexture");
 	glUniform1i(uCurrbTexture, g_CurrNum + 2);
-	g_CurrNum = (g_CurrNum + 1) % 10;
+	g_CurrNum = rand() % 2000;
 	Sleep(300);
 
 	int uNumsTexture = glGetUniformLocation(m_FSShader, "u_NumsTexture");

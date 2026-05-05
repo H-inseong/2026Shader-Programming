@@ -225,8 +225,28 @@ void Num()
 	FragColor = texture(u_NumsTexture, newTex);
 
 }
+void Num_AI()
+{
+	float num = max(float(u_InputNum), 1.0); 
 
+	float digitCount = floor(log(num) / log(10.0)) + 1.0; 
+
+	float col = floor(v_Tex.x * digitCount);
+	float tiledX = fract(v_Tex.x * digitCount);
+
+	float tx = tiledX / 5.0;
+	float ty = v_Tex.y / 2.0;
+
+	float power = pow(10.0, (digitCount - 1.0) - col); 
+	float index = floor(mod(float(u_InputNum) / power, 10.0));
+
+	float offsetX = fract(index / 5.0);
+	float offsetY = floor(index / 5.0) / 2.0;
+	
+	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_NumsTexture, newTex);
+}
 void main()
 {
-	Num();
+	Num_AI();
 }
