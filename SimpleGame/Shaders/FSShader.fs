@@ -211,6 +211,21 @@ void Brick()
 	FragColor = texture(u_RgbTexture, vec2(tx, ty));
 }
 
+void Brick_90rotate()
+{
+	float resolX = 2;
+	float resolY = 2;
+	float shear = 0.5;
+
+	float offsetX = 0;
+	float offsetY = 0.5 - fract(ceil(v_Tex.x * resolY) * shear);
+
+	float tx = fract(v_Tex.x * resolX + offsetX);
+	float ty = fract(v_Tex.y * resolY + offsetY);
+
+	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+}
+
 void Num()
 {
 	float index = float(u_InputNum);
@@ -219,7 +234,7 @@ void Num()
 	float ty = v_Tex.y / 2;
 	
 	float offsetX = fract(index / 5);
-	float offsetY = floor(index/5) / 2;
+	float offsetY = floor(index / 5) / 2;
 
 	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
 	FragColor = texture(u_NumsTexture, newTex);
@@ -246,7 +261,8 @@ void Num_AI()
 	vec2 newTex = vec2(tx + offsetX, ty + offsetY);
 	FragColor = texture(u_NumsTexture, newTex);
 }
+
 void main()
 {
-	Num_AI();
+	Brick_90rotate();
 }
