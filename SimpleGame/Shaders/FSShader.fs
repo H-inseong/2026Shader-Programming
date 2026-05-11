@@ -218,7 +218,7 @@ void Brick_90rotate()
 	float shear = 0.5;
 
 	float offsetX = 0;
-	float offsetY = 0.5 - fract(ceil(v_Tex.x * resolY) * shear);
+	float offsetY = abs(0.5 - fract(ceil(v_Tex.x * resolY) * shear));
 
 	float tx = fract(v_Tex.x * resolX + offsetX);
 	float ty = fract(v_Tex.y * resolY + offsetY);
@@ -262,7 +262,91 @@ void Num_AI()
 	FragColor = texture(u_NumsTexture, newTex);
 }
 
+void Q()
+{
+	float tx = 0.0;
+	float ty = 0.0;
+
+	float offsetX = 0.0;
+	float offsetY = 0.0;
+
+	FragColor = texture(u_RgbTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
+// 가로 R B G 
+void Q6()
+{
+	float tx = fract(v_Tex.x * 3);
+	float ty = v_Tex.y/3;
+
+	float offsetX = 0;
+	float offsetY = abs(floor(v_Tex.x * 3) / 3 - 2); // 답은 맞는데 좋진 않음
+
+	FragColor = texture(u_RgbTexture, vec2(tx + offsetX, ty + offsetY));
+}
+//step도 약간 반칙임
+void Q62()
+{
+	float tx = fract(v_Tex.x * 3);
+	float ty = v_Tex.y/3 ;
+
+	float offsetX = 0;
+	float offsetY = step(1.0/3.0, v_Tex.x) * 2.0/3.0 + step(2.0/3.0, v_Tex.x) * -1.0/3.0;
+
+	FragColor = texture(u_RgbTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
+//세로 G B R
+void Q7()
+{
+	float tx = v_Tex.x;
+	float ty = fract(v_Tex.y * 3) / 3;
+
+	float offsetX = 0;
+	float offsetY = fract((floor(v_Tex.y*3) + 1) / 3);
+
+	FragColor = texture(u_RgbTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
+// 숫자 7 출력
+void Q8()
+{
+	float tx = v_Tex.x / 5;
+	float ty = v_Tex.y / 2;
+	//.0이나 .f 붙여서 실수로 만들어 줘야함 
+	float offsetX = fract(7.0 / 5);
+	float offsetY = floor(7.0 / 5) / 2;
+
+	FragColor = texture(u_NumsTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
+// 2 3 동시 출력
+void Q9()
+{
+	float tx = v_Tex.x / 5 * 2;
+	float ty = v_Tex.y / 2;
+	
+	float offsetX = fract(2.0 / 5);
+	float offsetY = 0;
+
+	FragColor = texture(u_NumsTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
+//index 사용해서 숫자 스프라이팅
+void Q10()
+{
+	float index = 8;
+
+	float tx = v_Tex.x / 5;
+	float ty = v_Tex.y / 2;
+	
+	float offsetX = fract(index / 5);
+	float offsetY = floor(index / 5) / 2;
+
+	FragColor = texture(u_NumsTexture, vec2(tx + offsetX, ty + offsetY));
+}
+
 void main()
 {
-	Brick_90rotate();
+	Q10();
 }

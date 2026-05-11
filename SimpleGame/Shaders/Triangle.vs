@@ -142,7 +142,59 @@ void ImpactCircle()
     }
 }
 
+void Q ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + 0;
+ newPos.y = a_Position.y + 0;
+ gl_Position = newPos;
+}
+
+//sin 2주기
+void Q1 ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + a_RandomValue * 2 - 1;
+ newPos.y = a_Position.y + sin(a_RandomValue * 4 * c_PI) * 0.5;
+ gl_Position = newPos;
+}
+
+//노이즈
+void Q2 ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + a_RandomValue  * 2 -1;
+ newPos.y = a_Position.y + a_RandomValue2 * 2 -1;
+ gl_Position = newPos;
+}
+
+//좌상 우하단 사선
+void Q3 ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + a_RandomValue  * 2 -1;
+ newPos.y = a_Position.y + (1 - a_RandomValue)  * 2 -1;
+ gl_Position = newPos;
+}
+
+void Q4 ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + cos(a_RandomValue * 2 * c_PI) / 2;
+ newPos.y = a_Position.y + sin(a_RandomValue * 2 * c_PI);
+ gl_Position = newPos;
+}
+
+//좌하단 우상단 대각선 2주기
+void Q5 ()
+{
+ vec4 newPos = vec4(0,0,0,1);
+ newPos.x = a_Position.x + (a_RandomValue * 2 - 1);
+ newPos.y = a_Position.y + fract(a_RandomValue * 2) * 2 - 1;
+ gl_Position = newPos;
+}
+
 void main()
 {
-    sinpa();
+    Q5();
 }

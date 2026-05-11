@@ -135,7 +135,7 @@ void Renderer::CreateVertexBufferObjects()
 	{
 		float centerX = 0.0f;
 		float centerY = 0.0f;
-		float size = 0.05f;
+		float size = 0.01f;
 		float mass = 1.0f;
 		float rv1 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 		float rv2 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
@@ -428,7 +428,7 @@ void Renderer::DrawFSShader()
 
 	int uCurrbTexture = glGetUniformLocation(m_FSShader, "u_CurrNumTexture");
 	glUniform1i(uCurrbTexture, g_CurrNum + 2);
-	g_CurrNum = rand() % 2000;
+	g_CurrNum = rand() % 20000;
 
 	int uNumsTexture = glGetUniformLocation(m_FSShader, "u_NumsTexture");
 	glUniform1i(uNumsTexture, 1);
