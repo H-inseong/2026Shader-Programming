@@ -10,8 +10,13 @@ in float a_RandomValue;
 in float a_RandomValue2;
 in float a_RandomValue3;
 in float a_LifeTime;
+in vec2  a_Tex;
+in vec3 a_RGB;
 
 out float v_Grey;
+out vec3 v_Color;
+out vec2 v_Tex;
+
 
 const float c_G = -9.8f;
 const float c_PI = 3.141592f;
@@ -194,7 +199,35 @@ void Q5 ()
  gl_Position = newPos;
 }
 
+void Shape()
+{
+    float lifetime = 0.5 * 5.0 * a_RandomValue;
+    float startTime = 5.0 * a_RandomValue2;
+
+    float newTime = u_Time - startTime;
+    if(newTime > 0)
+    {
+        float t = fract(newTime / lifetime) * lifetime;
+        float tt = t * t;
+
+        float newX = a_Position.x + a_Vel.x * t * 2;
+        float newY = a_Position.y + a_Vel.y * t * 2;
+
+        gl_Position = vec4(newX, newY, 0, 1);
+        v_Grey = 1 - fract(newTime/lifetime); // 시간이 지남에 따라 회색이 점점 밝아짐
+    }
+    else
+    {
+        gl_Position = vec4(-10, 0, 0, 1);
+        v_Grey = 1;
+    }
+
+    v_Tex = a_Tex;
+    v_Color = a_RGB;
+}
+
+
 void main()
 {
-    Q5();
+    Shape();
 }

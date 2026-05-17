@@ -126,45 +126,52 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	m_ParticleCount = 1000;
+	m_ParticleCount = 2000;
+
+	//x,y,z , Mass, vx, vy, RandomValue1, RandomValue2, RandomValue3, tx, ty, r,g,b -> ÃÑ 14°³ÀÇ float
+	const int floatsPerVertex = 14;
+	const int verticesPerParticle = 6;
+	const int floatsPerParticle = floatsPerVertex * verticesPerParticle;
 
 	std::vector<float> pD;
-	pD.reserve(m_ParticleCount * 48);
+	pD.reserve(m_ParticleCount * floatsPerParticle);
 
 	for (size_t i = 0; i < m_ParticleCount; ++i)
 	{
 		float centerX = 0.0f;
 		float centerY = 0.0f;
-		float size = 0.01f;
+		float size = 0.1f;
 		float mass = 1.0f;
+		float vx = ((rand() % 100) / 25.0f) - 2.0f;	// -2.0 ~ 2.0
+		float vy = ((rand() % 100) / 25.0f) - 2.0f;	// -2.0 ~ 2.0
+		
 		float rv1 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 		float rv2 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 		float rv3 = ((rand() % 100) / 100.0f);        // 0.0 ~ 1.0
 
-		float vx = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
-		float vy = ((rand() % 100) / 2.0f) - 1.0f;	// -1.0 ~ 1.0
-
-		float LT = 10.0f;
+		float R = ((rand() % 100) / 100.0f);
+		float G = ((rand() % 100) / 100.0f);
+		float B = ((rand() % 100) / 100.0f);
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(0.f); pD.push_back(1.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(1.f); pD.push_back(1.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(1.f); pD.push_back(0.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 
 		pD.push_back(centerX - size / 2); pD.push_back(centerY - size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(0.f); pD.push_back(1.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 		pD.push_back(centerX + size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(1.f); pD.push_back(0.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 		pD.push_back(centerX - size / 2); pD.push_back(centerY + size / 2); pD.push_back(0.0f);
 		pD.push_back(mass); pD.push_back(vx); pD.push_back(vy); pD.push_back(rv1); pD.push_back(rv2);
-		pD.push_back(rv3); pD.push_back(LT);
+		pD.push_back(rv3); pD.push_back(0.f); pD.push_back(0.f); pD.push_back(R); pD.push_back(G); pD.push_back(B);
 	}
 
 	glGenBuffers(1, &m_VBOParticle);
@@ -334,6 +341,7 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 float g_Time = 0;
 void Renderer::DrawTriangle()
 {
+
 	g_Time += 0.001f;
 
 	glUseProgram(m_TriangleShader);
@@ -366,6 +374,9 @@ void Renderer::DrawTriangle()
 
 void Renderer::DrawParticle()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	g_Time += 0.0005f;
 
 	glUseProgram(m_TriangleShader);
@@ -383,7 +394,8 @@ void Renderer::DrawParticle()
 	int attribRandomValue = glGetAttribLocation(m_TriangleShader, "a_RandomValue");
 	int attribRandomValue2 = glGetAttribLocation(m_TriangleShader, "a_RandomValue2");
 	int attribRandomValue3 = glGetAttribLocation(m_TriangleShader, "a_RandomValue3");
-	int attribLifeTime = glGetAttribLocation(m_TriangleShader, "a_LifeTime");
+	int attribTex = glGetAttribLocation(m_TriangleShader, "a_Tex");
+	int attribRGB = glGetAttribLocation(m_TriangleShader, "a_RGB");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
@@ -391,23 +403,25 @@ void Renderer::DrawParticle()
 	glEnableVertexAttribArray(attribRandomValue);
 	glEnableVertexAttribArray(attribRandomValue2);
 	glEnableVertexAttribArray(attribRandomValue3);
-	glEnableVertexAttribArray(attribLifeTime);
+	glEnableVertexAttribArray(attribTex);
+	glEnableVertexAttribArray(attribRGB);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOParticle);
 
-	auto stride = sizeof(float) * 10;
+	auto stride = sizeof(float) * 14;
 
-	// Position, Mass, Velocity, RandomValue1, RandomValue2, RandomValue3, LifeTime
+	// Position, Mass, Velocity, RandomValue1, RandomValue2, RandomValue3, Tex, RGB
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
 	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 3));
 	glVertexAttribPointer(arrtibVelocity, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 4));
 	glVertexAttribPointer(attribRandomValue, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 6));
 	glVertexAttribPointer(attribRandomValue2, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 7));
 	glVertexAttribPointer(attribRandomValue3, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 8));
-	glVertexAttribPointer(attribLifeTime, 1, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 9));
-
+	glVertexAttribPointer(attribTex, 2, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 9));
+	glVertexAttribPointer(attribRGB, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(sizeof(float) * 11));
 
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleCount * 6);
+	glDisable(GL_BLEND);
 }
 
 int g_CurrNum = 0;
