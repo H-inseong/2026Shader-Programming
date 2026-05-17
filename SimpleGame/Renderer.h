@@ -27,8 +27,6 @@ private:
 	void CreateVertexBufferObjects();
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 
-
-
 	bool m_Initialized = false;
 	
 	unsigned int m_WindowSizeX = 0;
@@ -54,5 +52,8 @@ private:
 	GLuint m_RgbTexture = 0;
 	GLuint m_NumsTexture = 0;
 	GLuint m_NumTexture[10];
+
+	GLuint m_ParticleTexture = 0;
+	GLuint m_ParticleSpriteTexture = 0;
 };
 

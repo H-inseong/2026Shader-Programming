@@ -36,6 +36,8 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 		sprintf_s(filePath, "./Textures/%d.png", i);
 		m_NumTexture[i] = CreatePngTexture(filePath, GL_NEAREST);
 	}
+	m_ParticleTexture = CreatePngTexture("./Textures/particle.png", GL_NEAREST); // 12
+	m_ParticleSpriteTexture = CreatePngTexture("./Textures/particleSprite.png", GL_NEAREST); // 13
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -384,18 +386,28 @@ void Renderer::DrawParticle()
 	//uniform 다렉의 constant buffer과 비슷한 개념
 	//location(ID 또는 레지스터 넘버같은 개념) 값을 가져옴
 	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
+	int uParticleTexture = glGetUniformLocation(m_TriangleShader, "u_ParticleTexture");
+	int uParticleSpriteTexture = glGetUniformLocation(m_TriangleShader, "u_ParticleSpriteTexture");
 
 	//드로우 콜 전에 uniform 변수에 값을 할당
 	glUniform1f(uTime, g_Time);
+	glUniform1i(uParticleTexture, 0);
+	glUniform1i(uParticleSpriteTexture, 1);
 
-	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
-	int		attribMass = glGetAttribLocation(m_TriangleShader, "a_Mass");
-	int arrtibVelocity = glGetAttribLocation(m_TriangleShader, "a_Vel");
-	int attribRandomValue = glGetAttribLocation(m_TriangleShader, "a_RandomValue");
-	int attribRandomValue2 = glGetAttribLocation(m_TriangleShader, "a_RandomValue2");
-	int attribRandomValue3 = glGetAttribLocation(m_TriangleShader, "a_RandomValue3");
-	int attribTex = glGetAttribLocation(m_TriangleShader, "a_Tex");
-	int attribRGB = glGetAttribLocation(m_TriangleShader, "a_RGB");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_ParticleTexture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_ParticleSpriteTexture);
+
+	int attribPosition		= glGetAttribLocation(m_TriangleShader, "a_Position");
+	int	attribMass			= glGetAttribLocation(m_TriangleShader, "a_Mass");
+	int arrtibVelocity		= glGetAttribLocation(m_TriangleShader, "a_Vel");
+	int attribRandomValue	= glGetAttribLocation(m_TriangleShader, "a_RandomValue");
+	int attribRandomValue2	= glGetAttribLocation(m_TriangleShader, "a_RandomValue2");
+	int attribRandomValue3	= glGetAttribLocation(m_TriangleShader, "a_RandomValue3");
+	int attribTex			= glGetAttribLocation(m_TriangleShader, "a_Tex");
+	int attribRGB			= glGetAttribLocation(m_TriangleShader, "a_RGB");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
