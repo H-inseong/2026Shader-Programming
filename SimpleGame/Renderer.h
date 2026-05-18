@@ -19,6 +19,7 @@ public:
 	void DrawTriangle();
 	void DrawParticle();
 	void DrawFSShader();
+	void DrawDummy();
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -26,6 +27,7 @@ private:
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
 	void CreateVertexBufferObjects();
 	void GetGLPosition(float x, float y, float *newX, float *newY);
+	void GenDummyMesh(int x, int y);
 
 	bool m_Initialized = false;
 	
@@ -40,6 +42,11 @@ private:
 
 	GLuint m_VBOParticle = 0;
 	size_t m_ParticleCount = 0;
+
+	GLuint m_VBODummy = 0;
+	GLuint m_DummyShader = 0;
+	GLuint m_DummyVertexCount = 0;
+
 
 	//Fragment shader
 	GLuint m_VBOFS = 0;
