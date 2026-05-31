@@ -20,6 +20,7 @@ public:
 	void DrawParticle();
 	void DrawFSShader();
 	void DrawDummy();
+	void Update(float fTimeElapsed);
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
 	bool ReadFile(char* filename, std::string *target);
@@ -62,5 +63,8 @@ private:
 
 	GLuint m_ParticleTexture = 0;
 	GLuint m_ParticleSpriteTexture = 0;
+	GLuint m_MovieTexture = 0;
+
+	float m_Time = 0.0f;
 };
 

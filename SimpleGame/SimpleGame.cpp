@@ -10,6 +10,7 @@ but WITHOUT ANY WARRANTY.
 
 #include "stdafx.h"
 #include <iostream>
+#include <windows.h>		
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
@@ -20,7 +21,7 @@ Renderer *g_Renderer = NULL;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(.3f, 0.3f, 0.32f, 1.0f);
+	glClearColor(0,0,0, 1.0f);
 
 	// Renderer Test
 	/*g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);*/
@@ -32,6 +33,14 @@ void RenderScene(void)
 
 void Idle(void)
 {
+	static DWORD prevTime = timeGetTime();
+	DWORD currTime = timeGetTime();
+	float elapsed = (currTime - prevTime) / 1000.0f;
+	prevTime = currTime;
+
+	if (g_Renderer)
+		g_Renderer->Update(elapsed);
+
 	RenderScene();
 }
 
