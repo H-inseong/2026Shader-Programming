@@ -44,7 +44,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 	//Create VBOs
 	CreateVertexBufferObjects();
-	GenDummyMesh(32, 32);
+	GenDummyMesh(200, 200);
 
 	int index = 0;
 	for (int i = 0; i < 1000; ++i)
@@ -593,6 +593,8 @@ void Renderer::DrawDummy()
 
 	int uTime = glGetUniformLocation(m_DummyShader, "u_Time");
 	glUniform1f(uTime, m_Time);
+	int uDropPoints = glGetUniformLocation(m_DummyShader, "u_DropInfo");
+	glUniform4fv(uDropPoints, 1000, m_DropPoints);
 
 	int uMovieTex = glGetUniformLocation(m_DummyShader, "u_MovieTexture");
 	glUniform1i(uMovieTex, 0);

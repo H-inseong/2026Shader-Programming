@@ -7,7 +7,7 @@ uniform sampler2D u_CurrNumTexture;
 uniform sampler2D u_NumsTexture;
 uniform int u_InputNum;
 
-uniform vec4 u_DropInfo[1000]; // x, y, startTime, lifeTime
+
 
 in vec2 v_Tex;
 

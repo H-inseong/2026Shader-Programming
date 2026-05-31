@@ -33,9 +33,14 @@ float Linepattern()
 	return greyscale;
 }
 
-void main()
+void Flag()
 {
 	vec2 newTex = rotate2D(0) * v_Tex;
 
 	FragColor = texture(u_MovieTexture, newTex);
+}
+
+void main()
+{
+	FragColor = vec4(v_Grey, v_Grey, v_Grey, 1);	
 }
