@@ -19,7 +19,7 @@ void Frag()
 	float value = a_Pos.x + 0.5;
 
 	float newX = a_Pos.x;
-	float newY = a_Pos.y + sin(radian - u_Time) * 0.25 * value ;
+	float newY = a_Pos.y * (1.0 - value*0.5) + value * 0.25 * sin(radian - u_Time);
 
 	vec4 final = vec4(newX, newY, 0, 1);
 	vec4 newPosition = final;

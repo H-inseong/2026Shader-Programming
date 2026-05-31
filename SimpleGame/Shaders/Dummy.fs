@@ -37,5 +37,5 @@ void main()
 {
 	vec2 newTex = rotate2D(0) * v_Tex;
 
-	FragColor = Linepattern() * texture(u_MovieTexture, newTex);
+	FragColor = texture(u_MovieTexture, newTex);
 }
