@@ -26,6 +26,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
 	m_FSShader = CompileShaders("./Shaders/FSShader.vs", "./Shaders/FSShader.fs");
 	m_DummyShader = CompileShaders("./Shaders/Dummy.vs", "./Shaders/Dummy.fs");
+	m_TextureShader = CompileShaders("./Shaders/Texture.vs", "./Shaders/Texture.fs");
 
 
 	//Load textures
@@ -200,11 +201,26 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(FSRect), FSRect, GL_STATIC_DRAW);
 
+	float texRect[]
+		=
+	{
+		-1.f, -1.f, 0.f,
+		 1.f,  1.f, 0.f,
+		-1.f,  1.f, 0.f,
+
+		-1.f, -1.f, 0.f,
+		 1.f,  1.f, 0.f,
+		 1.f, -1.f, 0.f,
+	};
+
+	glGenBuffers(1, &m_VBOTexture);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTexture);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texRect), texRect, GL_STATIC_DRAW);
+
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
 {
-	//���̴� ������Ʈ ����
 	GLuint ShaderObj = glCreateShader(ShaderType);
 
 	if (ShaderObj == 0) {
@@ -333,7 +349,6 @@ void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, flo
 
 	glDisableVertexAttribArray(attribPosition);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -419,6 +434,7 @@ void Renderer::GenDummyMesh(int resolX, int resolY)
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBODummy);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (pointCountX - 1) * (pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
+
 
 void Renderer::Update(float fTimeElapsed)
 {
@@ -609,4 +625,32 @@ void Renderer::DrawDummy()
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_DummyVertexCount);
+
+	DrawTexture(m_MovieTexture, 0, 0, .2f);
+}
+
+
+void Renderer::DrawTexture(GLuint texID, float x, float y, float scale)
+{
+
+	int shader = m_TextureShader;
+	glUseProgram(shader);
+
+	int uTex = glGetUniformLocation(shader, "u_Texture");
+	glUniform1i(uTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	int uTrans = glGetUniformLocation(shader, "u_Trans");
+	glUniform4f(uTrans, x, y, 1, scale);
+
+	int attribPosition = glGetAttribLocation(shader, "a_Pos");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTexture);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(attribPosition);
+
 }

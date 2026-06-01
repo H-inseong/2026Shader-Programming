@@ -30,6 +30,8 @@ private:
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 	void GenDummyMesh(int x, int y);
 
+	void DrawTexture(GLuint texID, float x, float y, float scale);
+
 	bool m_Initialized = false;
 	
 	unsigned int m_WindowSizeX = 0;
@@ -48,10 +50,12 @@ private:
 	GLuint m_DummyShader = 0;
 	GLuint m_DummyVertexCount = 0;
 
+	GLuint m_VBOTexture = 0;
 
-	//Fragment shader
+	//shader
 	GLuint m_VBOFS = 0;
 	GLuint m_FSShader = 0;
+	GLuint m_TextureShader = 0;
 
 	//RainDrops
 	float m_DropPoints[1000 * 4]; //x, y, startTime, endTime
