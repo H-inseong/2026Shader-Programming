@@ -1,6 +1,9 @@
 #version 330
 
 layout(location=0) out vec4 FragColor;
+layout(location=1) out vec4 FragColor1;
+layout(location=2) out vec4 FragColor2;
+
 uniform float u_Time;
 uniform sampler2D u_RgbTexture;
 uniform sampler2D u_CurrNumTexture;
@@ -72,7 +75,7 @@ void CircleSin()
 	FragColor = vec4(pow(value, 100));
 }
 
-void RainDrop()
+vec4 RainDrop()
 {	
 	float temp = 0;
 
@@ -107,10 +110,10 @@ void RainDrop()
 		{
 		}
 	}
-	FragColor = vec4(temp);
+	return vec4(temp);
 }
 
-void flag()
+vec4 flag()
 {
 	float speed = 10;
 	float amp = 0.1;
@@ -127,9 +130,8 @@ void flag()
 	else
 	{
 		grey = 0;
-		discard;
 	}
-	FragColor = vec4(grey);
+	return vec4(grey);
 }
 
 void TextureSampling()
@@ -196,7 +198,7 @@ void  Right_NonemirrorTexture()
 	FragColor = texture(u_RgbTexture, vec2(tx, ty));
 }
 
-void Brick()
+vec4 Brick()
 {
 	float resolX = 2;
 	float resolY = 2;
@@ -208,7 +210,7 @@ void Brick()
 	float tx = fract(v_Tex.x * resolX + offsetX);
 	float ty = fract(v_Tex.y * resolY + offsetY);
 
-	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+	return vec4(texture(u_RgbTexture, vec2(tx, ty)));
 }
 
 void Brick_90rotate()
@@ -333,7 +335,7 @@ void Q9()
 }
 
 //index 사용해서 숫자 스프라이팅
-void Q10()
+vec4 Q10()
 {
 	float index = 8;
 
@@ -343,10 +345,12 @@ void Q10()
 	float offsetX = fract(index / 5);
 	float offsetY = floor(index / 5) / 2;
 
-	FragColor = texture(u_NumsTexture, vec2(tx + offsetX, ty + offsetY));
+	return vec4(texture(u_NumsTexture, vec2(tx + offsetX, ty + offsetY)));
 }
 
 void main()
 {
-	Q10();
+	FragColor = RainDrop();
+	FragColor1 = flag();
+	FragColor2 = Brick();
 }

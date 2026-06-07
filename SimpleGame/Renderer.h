@@ -23,6 +23,7 @@ public:
 	void DrawDummy_FBO();
 	
 	void DrawTotal();
+	void DrawMultipleRendertarget();
 
 	void Update(float fTimeElapsed);
 private:
@@ -83,5 +84,10 @@ private:
 	GLuint m_FBO1_Texture = 0;
 	GLuint m_FBO2 = 0;
 	GLuint m_FBO2_Texture = 0;
+
+	GLuint m_MRT_FBO = 0;
+	GLuint m_MRT_FBO_Texture0 = 0;
+	GLuint m_MRT_FBO_Texture1 = 0;
+	GLuint m_MRT_FBO_Texture2 = 0;
 };
 

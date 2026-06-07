@@ -28,7 +28,8 @@ void RenderScene(void)
 	//g_Renderer->DrawParticle();
 	//g_Renderer->DrawFSShader();
 	//g_Renderer->DrawDummy_FBO();
-	g_Renderer->DrawTotal();
+	//g_Renderer->DrawTotal();
+	g_Renderer->DrawMultipleRendertarget();
 	glutSwapBuffers();
 }
 
