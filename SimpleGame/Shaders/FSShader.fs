@@ -213,7 +213,7 @@ vec4 Brick()
 	return vec4(texture(u_RgbTexture, vec2(tx, ty)));
 }
 
-void Brick_90rotate()
+vec4 Brick_90rotate()
 {
 	float resolX = 2;
 	float resolY = 2;
@@ -225,7 +225,7 @@ void Brick_90rotate()
 	float tx = fract(v_Tex.x * resolX + offsetX);
 	float ty = fract(v_Tex.y * resolY + offsetY);
 
-	FragColor = texture(u_RgbTexture, vec2(tx, ty));
+	return vec4(texture(u_RgbTexture, vec2(tx, ty)));
 }
 
 void Num()

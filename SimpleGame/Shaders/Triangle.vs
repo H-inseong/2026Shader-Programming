@@ -59,41 +59,51 @@ void sinpa()
 
 void Falling()
 {
-	float startTime = random(a_RandomValue);
-	float scale = random(a_RandomValue * 123.45);
+	float startTime = random(a_RandomValue) * 3.0;
+	float scale = random(a_RandomValue * 123.45) * 0.5 + 0.5;
 	float newTime = u_Time - startTime;
 	
-	if ( newTime > 0 ) {
-
-        float lifescale = 1.0;
-        float lifetime = a_LifeTime * a_RandomValue3 * lifescale;
+	if ( newTime > 0.0 ) {
+		// a_LifeTime 대신 a_RandomValue3를 기반으로 수명이 1.0 ~ 3.0초가 되도록 설정 (0으로 나누기 방지)
+		float lifetime = 1.0 + a_RandomValue3 * 2.0;
 		float t = lifetime * fract(newTime / lifetime);
 		float tt = t*t;
 		float vx, vy;
 		float sx, sy;
 
-		vx = a_Vel.x / 500;
-		vy = a_Vel.y / 50;
+		// 수평 속도와 수직 속도 보정
+		vx = a_Vel.x * 0.1;
+		vy = a_Vel.y * 0.1;
 
-		sx = a_Position.x * scale + cos(a_RandomValue2 * 2 * c_PI);
-		sy = a_Position.y * scale + sin(a_RandomValue2 * 2 * c_PI);
+		// 원형 궤도 배치
+		float radius = 1;
+		float angle = a_RandomValue2 * 2.0 * c_PI;
+		sx = a_Position.x * scale + cos(angle) * radius;
+		sy = a_Position.y * scale + sin(angle) * radius;
 
 		vec4 newPos;
-
 		newPos.x = sx + vx * t;
-		newPos.y = sy + vy * t + 0.5 * c_G * tt;
-		newPos.z = 0;
-		newPos.w = 1;
+		
+		// 화면 좌표계(-1.0 ~ 1.0)에 적합한 완만한 중력 가속도 적용
+		float gravity = -1.5;
+		newPos.y = sy + vy * t + 0.5 * gravity * tt;
+		newPos.z = 0.0;
+		newPos.w = 1.0;
 
 		gl_Position = newPos;
-
+		v_Grey = 1.0 - (t / lifetime); // 시간에 지남에 따라 서서히 사라짐
 	}
 	else
 	{
-		gl_Position = vec4(-100, -100, 0, 1);
+		gl_Position = vec4(-100.0, -100.0, 0.0, 1.0);
+		v_Grey = 0.0;
 	}
 
+	v_Color = a_RGB;
+	v_Tex = a_Tex;
 }
+
+
 
 void ImpactCircle()
 {
@@ -229,5 +239,5 @@ void Shape()
 
 void main()
 {
-    Shape();
+    Falling();
 }

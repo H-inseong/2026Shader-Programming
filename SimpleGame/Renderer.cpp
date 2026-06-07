@@ -596,6 +596,35 @@ void Renderer::GenFBOs()
 		assert(0);
 	}
 
+
+	glGenTextures(1, &m_MRT_HDR_FBO_High_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_High_Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	glGenTextures(1, &m_MRT_HDR_FBO_Low_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_Low_Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	glGenFramebuffers(1, &m_MRT_HDR_FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_MRT_HDR_FBO_Low_Texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_MRT_HDR_FBO_High_Texture, 0);
+
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "FBO creation failed. Status: " << status << std::endl;
+		assert(0);
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // 원상복구
 }
 
@@ -644,13 +673,10 @@ void Renderer::DrawParticle()
 
 	glUseProgram(m_TriangleShader);
 
-	//uniform �ٷ��� constant buffer�� ����� ����
-	//location(ID �Ǵ� �������� �ѹ����� ����) ���� ������
 	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
 	int uParticleTexture = glGetUniformLocation(m_TriangleShader, "u_ParticleTexture");
 	int uParticleSpriteTexture = glGetUniformLocation(m_TriangleShader, "u_ParticleSpriteTexture");
 
-	//��ο� �� ���� uniform ������ ���� �Ҵ�
 	glUniform1f(uTime, m_Time);
 	glUniform1i(uParticleTexture, 0);
 	glUniform1i(uParticleSpriteTexture, 1);
@@ -857,6 +883,29 @@ void Renderer::DrawMultipleRendertarget()
 	DrawTexture(m_MRT_FBO_Texture0, -0.5, 0.5, .5f, false);
 	DrawTexture(m_MRT_FBO_Texture1, 0.5, 0.5, .5f, false);
 	DrawTexture(m_MRT_FBO_Texture2, 0, -0.5, .5f, false);
+}
+
+void Renderer::DrawHDRTriangle()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+	GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, DrawBuffers);
+	glClearColor(0, 0, 0, 1.0f);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, 1024, 1024);
+
+	DrawParticle();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, m_WindowSizeX, m_WindowSizeY);
+	GLenum RDrawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, RDrawBuffers);
+
+	DrawTexture(m_MRT_HDR_FBO_Low_Texture, -0.5, 0, .5f, true);
+	DrawTexture(m_MRT_HDR_FBO_High_Texture, 0.5, 0, .5f, true);
+
+
 }
 
 
