@@ -24,10 +24,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
-	m_FSShader = CompileShaders("./Shaders/FSShader.vs", "./Shaders/FSShader.fs");
-	m_DummyShader = CompileShaders("./Shaders/Dummy.vs", "./Shaders/Dummy.fs");
+	m_FSShader		= CompileShaders("./Shaders/FSShader.vs", "./Shaders/FSShader.fs");
+	m_DummyShader	= CompileShaders("./Shaders/Dummy.vs", "./Shaders/Dummy.fs");
 	m_TextureShader = CompileShaders("./Shaders/Texture.vs", "./Shaders/Texture.fs");
-
+	m_BlurHShader	= CompileShaders("./Shaders/BlurH.vs", "./Shaders/BlurH.fs");
+	m_BlurVShader	= CompileShaders("./Shaders/BlurV.vs", "./Shaders/BlurV.fs");
 
 	//Load textures
 	m_RgbTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST); // 0
@@ -625,7 +626,51 @@ void Renderer::GenFBOs()
 		assert(0);
 	}
 
+	glGenBuffers(2, m_PingpongFBO);
+	glGenTextures(2, m_PingpongTexture);
+
+	for (int i = 0; i < 2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_PingpongTexture[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, NULL);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_PingpongFBO[i]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_PingpongTexture[i], 0);
+
+		status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE)
+		{
+			std::cout << "Pingpong FBO creation failed. Status: " << status << std::endl;
+			assert(0);
+		}
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // 원상복구
+}
+
+void Renderer::DrawGaussianBlur(GLuint texID, GLuint targetFBOID, GLuint shader)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, targetFBOID);
+	glUseProgram(shader);
+
+	GLuint posLoc = glGetAttribLocation(shader, "a_Pos");
+	glEnableVertexAttribArray(posLoc);
+	GLuint texLoc = glGetAttribLocation(shader, "a_Tex");
+	glEnableVertexAttribArray(texLoc);
+	glUniform1i(glGetUniformLocation(shader, "u_Texture"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (GLvoid*)(sizeof(float) * 3));
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 
@@ -774,8 +819,8 @@ void Renderer::DrawFSShader()
 	glActiveTexture(GL_TEXTURE11);
 	glBindTexture(GL_TEXTURE_2D, m_NumTexture[9]);
 
-	int attribPosition = glGetAttribLocation(m_FSShader, "a_Position");
-	int attribTexCoord = glGetAttribLocation(m_FSShader, "a_TexCoord");
+	int attribPosition = glGetAttribLocation(m_FSShader, "a_Pos");
+	int attribTexCoord = glGetAttribLocation(m_FSShader, "a_Tex");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribTexCoord);
@@ -897,15 +942,22 @@ void Renderer::DrawHDRTriangle()
 
 	DrawParticle();
 
+	DrawGaussianBlur(m_MRT_HDR_FBO_Low_Texture, m_PingpongFBO[0], m_BlurHShader);
+	for (int i = 0; i < 20; i++)
+	{
+		DrawGaussianBlur(m_PingpongTexture[0], m_PingpongFBO[1], m_BlurVShader);
+		DrawGaussianBlur(m_PingpongTexture[1], m_PingpongFBO[0], m_BlurHShader);
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, m_WindowSizeX, m_WindowSizeY);
 	GLenum RDrawBuffers[] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, RDrawBuffers);
 
-	DrawTexture(m_MRT_HDR_FBO_Low_Texture, -0.5, 0, .5f, true);
-	DrawTexture(m_MRT_HDR_FBO_High_Texture, 0.5, 0, .5f, true);
-
-
+	DrawTexture(m_MRT_HDR_FBO_Low_Texture, -0.5, 0.5, .5f, true);
+	DrawTexture(m_MRT_HDR_FBO_High_Texture, 0.5, 0.5, .5f, true);
+	DrawTexture(m_PingpongTexture[0], -0.5, -0.5, .5f, true);
+	DrawTexture(m_PingpongTexture[1], 0.5, -0.5, .5f, true);
 }
 
 
