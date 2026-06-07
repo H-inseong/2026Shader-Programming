@@ -27,7 +27,8 @@ void RenderScene(void)
 	/*g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);*/
 	//g_Renderer->DrawParticle();
 	//g_Renderer->DrawFSShader();
-	g_Renderer->DrawDummy();
+	//g_Renderer->DrawDummy_FBO();
+	g_Renderer->DrawTotal();
 	glutSwapBuffers();
 }
 

@@ -20,6 +20,10 @@ public:
 	void DrawParticle();
 	void DrawFSShader();
 	void DrawDummy();
+	void DrawDummy_FBO();
+	
+	void DrawTotal();
+
 	void Update(float fTimeElapsed);
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -29,8 +33,9 @@ private:
 	void CreateVertexBufferObjects();
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 	void GenDummyMesh(int x, int y);
+	void GenFBOs();
 
-	void DrawTexture(GLuint texID, float x, float y, float scale);
+	void DrawTexture(GLuint texID, float x, float y, float scale, bool flip = true);
 
 	bool m_Initialized = false;
 	
@@ -70,5 +75,13 @@ private:
 	GLuint m_MovieTexture = 0;
 
 	float m_Time = 0.0f;
+
+	//FBO
+	GLuint m_FBO = 0;
+	GLuint m_FBO_Texture = 0;
+	GLuint m_FBO1 = 0;
+	GLuint m_FBO1_Texture = 0;
+	GLuint m_FBO2 = 0;
+	GLuint m_FBO2_Texture = 0;
 };
 

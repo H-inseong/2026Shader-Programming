@@ -47,6 +47,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	CreateVertexBufferObjects();
 	GenDummyMesh(200, 200);
 
+
 	int index = 0;
 	for (int i = 0; i < 1000; ++i)
 	{
@@ -61,6 +62,8 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	{
 		m_Initialized = true;
 	}
+
+	GenFBOs();
 }
 
 bool Renderer::IsInitialized()
@@ -435,6 +438,108 @@ void Renderer::GenDummyMesh(int resolX, int resolY)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (pointCountX - 1) * (pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
 
+void Renderer::GenFBOs()
+{
+	//Gen Texture
+	glGenTextures(1, &m_FBO_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO_Texture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Render Buffer
+	GLuint depthBuffer;
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO
+	glGenFramebuffers(1, &m_FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "FBO creation failed. Status: " << status << std::endl;
+		assert(0);
+	}
+	
+	//Gen Texture
+	glGenTextures(1, &m_FBO1_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO1_Texture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Render Buffer
+	GLuint depthBuffer1;
+	glGenRenderbuffers(1, &depthBuffer1);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer1);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO
+	glGenFramebuffers(1, &m_FBO1);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO1);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO1_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer1);
+
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "FBO creation failed. Status: " << status << std::endl;
+		assert(0);
+	}
+
+	//Gen Texture
+	GLuint textureId;
+	glGenTextures(1, &m_FBO2_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO2_Texture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Render Buffer
+	GLuint depthBuffer2;
+	glGenRenderbuffers(1, &depthBuffer2);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer2);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO
+	glGenFramebuffers(1, &m_FBO2);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO2);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO2_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer2);
+
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "FBO creation failed. Status: " << status << std::endl;
+		assert(0);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // 원상복구
+}
+
 
 void Renderer::Update(float fTimeElapsed)
 {
@@ -629,8 +734,45 @@ void Renderer::DrawDummy()
 	DrawTexture(m_MovieTexture, 0, 0, .2f);
 }
 
+void Renderer::DrawDummy_FBO()
+{
+	//Bind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glViewport(0, 0, 512, 512);
+	DrawDummy();
 
-void Renderer::DrawTexture(GLuint texID, float x, float y, float scale)
+	//Unbind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, m_WindowSizeX, m_WindowSizeY);
+
+	DrawTexture(m_FBO_Texture, 0, 0, .5f, false);
+
+}
+
+void Renderer::DrawTotal()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glViewport(0, 0, 512, 512);
+	DrawDummy();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO1);
+
+	DrawFSShader();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO2);
+
+	DrawParticle();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, m_WindowSizeX, m_WindowSizeY);
+
+	DrawTexture(m_FBO_Texture, -0.5, 0.5, .3f, false);
+	DrawTexture(m_FBO1_Texture, 0, 0.5, .3f, false);
+	DrawTexture(m_FBO2_Texture, -0.3, -0.5, .3f, false);
+}
+
+
+void Renderer::DrawTexture(GLuint texID, float x, float y, float scale, bool flip)
 {
 
 	int shader = m_TextureShader;
@@ -643,6 +785,9 @@ void Renderer::DrawTexture(GLuint texID, float x, float y, float scale)
 
 	int uTrans = glGetUniformLocation(shader, "u_Trans");
 	glUniform4f(uTrans, x, y, 1, scale);
+	
+	int uFlip = glGetUniformLocation(shader, "u_Flip");
+	glUniform1i(uFlip, flip ? 1 : 0);
 
 	int attribPosition = glGetAttribLocation(shader, "a_Pos");
 	glEnableVertexAttribArray(attribPosition);
