@@ -626,7 +626,7 @@ void Renderer::GenFBOs()
 		assert(0);
 	}
 
-	glGenBuffers(2, m_PingpongFBO);
+	glGenFramebuffers(2, m_PingpongFBO);
 	glGenTextures(2, m_PingpongTexture);
 
 	for (int i = 0; i < 2; i++)
@@ -942,7 +942,7 @@ void Renderer::DrawHDRTriangle()
 
 	DrawParticle();
 
-	DrawGaussianBlur(m_MRT_HDR_FBO_Low_Texture, m_PingpongFBO[0], m_BlurHShader);
+	DrawGaussianBlur(m_MRT_HDR_FBO_High_Texture, m_PingpongFBO[0], m_BlurHShader);
 	for (int i = 0; i < 20; i++)
 	{
 		DrawGaussianBlur(m_PingpongTexture[0], m_PingpongFBO[1], m_BlurVShader);
