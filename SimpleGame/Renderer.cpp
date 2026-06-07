@@ -956,7 +956,7 @@ void Renderer::DrawHDRTriangle()
 
 	DrawTexture(m_MRT_HDR_FBO_Low_Texture, -0.5, 0.5, .5f, true);
 	DrawTexture(m_MRT_HDR_FBO_High_Texture, 0.5, 0.5, .5f, true);
-	DrawTexture(m_PingpongTexture[0], -0.5, -0.5, .5f, true);
+	DrawTexture(m_PingpongTexture[0], -0.5, -0.5, .5f, false);
 	DrawTexture(m_PingpongTexture[1], 0.5, -0.5, .5f, true);
 }
 
